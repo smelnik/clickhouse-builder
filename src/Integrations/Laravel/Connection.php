@@ -163,13 +163,12 @@ class Connection extends \Illuminate\Database\Connection
     protected function createTransport(string $transport, array $options) : TransportInterface
     {
         switch ($transport) {
-            case 'http':
-                return new HttpTransport();
-                break;
-
             case 'cli':
                 return new ClickhouseCLIClientTransport($options['executable'] ?? null);
-                break;
+
+            case 'http':
+            default:
+                return new HttpTransport();
         }
     }
 
@@ -190,9 +189,9 @@ class Connection extends \Illuminate\Database\Connection
             }
 
             return $cluster;
-        } else {
-            return $this->assembleServer($config);
         }
+
+        return $this->assembleServer($config);
     }
 
     /**
@@ -204,13 +203,12 @@ class Connection extends \Illuminate\Database\Connection
      */
     protected function assembleServer(array $server): Server
     {
-        /* @var string $host */
-        /* @var string $port */
-        /* @var string $database */
-        /* @var string $username */
-        /* @var string $password */
-        /* @var array $options */
-        extract($server);
+        $host = $server['host'] ?? '127.0.0.1';
+        $port = $server['port'] ?? '8123';
+        $database = $server['database'] ?? null;
+        $username = $server['username'] ?? null;
+        $password = $server['password'] ?? null;
+        $options = $server['options'] ?? null;
 
         if (isset($options)) {
             $timeout = $options['timeout'] ?? null;
@@ -218,38 +216,16 @@ class Connection extends \Illuminate\Database\Connection
 
             $options = new ServerOptions();
 
-            if (!is_null($timeout)) {
+            if ($timeout !== null) {
                 $options->setTimeout($timeout);
             }
 
-            if (!is_null($protocol)) {
+            if ($protocol !== null) {
                 $options->setProtocol($protocol);
             }
         }
 
-        return new Server($host, $port ?? null, $database ?? null, $username ?? null, $password ?? null, $options ?? null);
-    }
-
-    /**
-     * Get a new query builder instance.
-     *
-     * @return \Tinderbox\ClickhouseBuilder\Integrations\Laravel\Builder
-     */
-    public function query()
-    {
-        return new Builder($this);
-    }
-
-    /**
-     * Begin a fluent query against a database table.
-     *
-     * @param string $table
-     *
-     * @return \Tinderbox\ClickhouseBuilder\Integrations\Laravel\Builder
-     */
-    public function table($table)
-    {
-        return $this->query()->from($table);
+        return new Server($host, $port, $database, $username, $password, $options);
     }
 
     /**
