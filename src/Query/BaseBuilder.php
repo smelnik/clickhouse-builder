@@ -133,6 +133,13 @@ abstract class BaseBuilder
     protected $files = [];
 
     /**
+     * An aggregate function and column to be run.
+     *
+     * @var array
+     */
+    public $aggregate;
+
+    /**
      * Set columns for select statement.
      *
      * @param array|mixed $columns
@@ -1769,9 +1776,21 @@ abstract class BaseBuilder
      *
      * @return array
      */
-    public function getOrders() : array
+    public function getOrders()
     {
         return $this->orders;
+    }
+
+    /**
+     * Set the limit and offset for a given page.
+     *
+     * @param  int  $page
+     * @param  int  $perPage
+     * @return \Illuminate\Database\Query\Builder|static
+     */
+    public function forPage($page, $perPage = 15)
+    {
+        return $this->skip(($page - 1) * $perPage)->take($perPage);
     }
 
     /**
@@ -1792,6 +1811,32 @@ abstract class BaseBuilder
     public function getHavings() : array
     {
         return $this->havings;
+    }
+
+    /**
+     * Alias to set the "offset" value of the query.
+     *
+     * @param  int  $value
+     * @return \Illuminate\Database\Query\Builder|static
+     */
+    public function skip($value)
+    {
+        return $this->offset($value);
+    }
+
+    /**
+     * Set the "offset" value of the query.
+     *
+     * @param  int  $value
+     * @return $this
+     */
+    public function offset($value)
+    {
+        $property = $this->unions ? 'unionOffset' : 'offset';
+
+        $this->$property = max(0, $value);
+
+        return $this;
     }
 
     /**
