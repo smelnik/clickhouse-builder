@@ -1,5 +1,5 @@
 {
-  "name": "merkeleon/clickhouse-builder",
+  "name": "libern/clickhouse-builder",
   "description": "Clickhouse sql query builder",
   "license": "MIT",
   "authors": [
