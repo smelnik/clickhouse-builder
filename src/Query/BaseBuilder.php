@@ -40,7 +40,7 @@ abstract class BaseBuilder
      * @var JoinClause
      */
     protected $join;
-    
+
     /**
      * Array join clause.
      *
@@ -124,7 +124,7 @@ abstract class BaseBuilder
      * @var array
      */
     protected $async = [];
-    
+
     /**
      * Files which should be sent on server to store into temporary table
      *
@@ -290,7 +290,7 @@ abstract class BaseBuilder
          */
         if ($table instanceof BaseBuilder) {
             $this->from->query($table);
-            
+
             $this->files = array_merge($this->files, $table->getFiles());
         }
 
@@ -417,7 +417,7 @@ abstract class BaseBuilder
 
         return $this;
     }
-    
+
     /**
      * Add array join to query.
      *
@@ -429,7 +429,7 @@ abstract class BaseBuilder
     {
         $this->arrayJoin = new ArrayJoinClause($this);
         $this->arrayJoin->array($arrayIdentifier);
-        
+
         return $this;
     }
 
@@ -1790,7 +1790,8 @@ abstract class BaseBuilder
      */
     public function forPage($page, $perPage = 15)
     {
-        return $this->skip(($page - 1) * $perPage)->take($perPage);
+        return $this->limit($perPage, ($page - 1) * $perPage);
+//        return $this->skip(($page - 1) * $perPage)->take($perPage);
     }
 
     /**
@@ -1868,7 +1869,7 @@ abstract class BaseBuilder
     {
         return $this->from;
     }
-    
+
     /**
      * Get ArrayJoinClause
      *
@@ -1938,7 +1939,7 @@ abstract class BaseBuilder
     {
         return $this->format;
     }
-    
+
     /**
      * Add file which should be sent on server
      *
@@ -1956,12 +1957,12 @@ abstract class BaseBuilder
         if (isset($this->files[$tableName])) {
             throw BuilderException::temporaryTableAlreadyExists($tableName);
         }
-        
+
         $this->files[$tableName] = new TempTable($tableName, $filePath, $structure, $format);
-        
+
         return $this;
     }
-    
+
     /**
      * Returns files which should be sent on server
      *
