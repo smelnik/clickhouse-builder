@@ -53,11 +53,11 @@ class Builder extends BaseBuilder
         $builder = $this->getCountQuery($column);
         $result = $builder->get();
 
-        if (!empty($this->groups)) {
-            return count($result);
-        } else {
-            return $result[0]['count'] ?? 0;
-        }
+//        if (!empty($this->groups)) {
+//            return count($result);
+//        } else {
+        return $result[0]['count'] ?? 0;
+//        }
     }
 
     /**
