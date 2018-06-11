@@ -168,14 +168,15 @@ abstract class BaseBuilder
      */
     public function getCountQuery($column = '*')
     {
-        $without = ['columns' => [], 'limit' => null];
+        $without = ['columns' => [], 'limit' => null, 'wheres' => [], 'groups' => [], 'havings' => []];
+//        $without = ['columns' => [], 'limit' => null];
 
         // always clear orders, even has group by
 //        if (empty($this->groups)) {
-            $without['orders'] = [];
+        $without['orders'] = [];
 //        }
 
-        $builder = $this->cloneWithout($without)->select(raw('count('.$column.') as `count`'));
+        $builder = $this->cloneWithout($without)->select(raw('count('.$column.') as `count`'))->from(raw("({$this->cloneWithout(['orders'=>[]])->toSql()})"));
 
         return $builder;
     }
