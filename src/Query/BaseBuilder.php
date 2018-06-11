@@ -170,9 +170,10 @@ abstract class BaseBuilder
     {
         $without = ['columns' => [], 'limit' => null];
 
-        if (empty($this->groups)) {
+        // always clear orders, even has group by
+//        if (empty($this->groups)) {
             $without['orders'] = [];
-        }
+//        }
 
         $builder = $this->cloneWithout($without)->select(raw('count('.$column.') as `count`'));
 
